@@ -1,15 +1,11 @@
-// Define the type for the callback function
-type Callback<T> = (...args: any[]) => void;
+type CallbackFunction = (...args: any[]) => void;
 
-// Generic Promisefy function
-function Promisefy<T>(
-  callback: (...args: any[]) => void
-): (...args: any[]) => Promise<T> {
-  return function call(...args: any[]): Promise<T> {
+function Promisify(callback: CallbackFunction) {
+  return function call(...args: any[]) {
     return new Promise((resolve, reject) => {
-      const handleError = (error: any, data: T | null) => {
-        if (data !== null) {
-          resolve(data);
+      const handleError = (error: string | null, value: number | null) => {
+        if (value !== null) {
+          resolve(value);
         } else {
           reject(error);
         }
@@ -19,14 +15,12 @@ function Promisefy<T>(
   };
 }
 
-// Define the `add` function with types
-function add(
+function adder(
   num1: number,
   num2: number,
-  handleError: (error: string | null, result: number | null) => void
+  handleError: (error: string | null, value: number | null) => void
 ): void {
   const value = num1 + num2;
-
   if (typeof value === "number") {
     handleError(null, value);
   } else {
@@ -35,21 +29,14 @@ function add(
   }
 }
 
-// Use the Promisefy function with proper types
-const res = Promisefy<number>(add);
+const res = Promisify(adder);
 
 res(1, 2)
-  .then((data) => {
-    console.log(data); // Should log: 3
-  })
-  .catch((error) => {
-    console.log(error); // Will not run in this case
-  });
+  .then((value) => console.log(value))
+  .catch((error) => console.log(error))
+  .finally(() => console.log("finished 1"));
 
-res(1, "2" as unknown as number) // Type assertion used for demonstration
-  .then((data) => {
-    console.log(data);
-  })
-  .catch((error) => {
-    console.log(error); // Should log: not a number
-  });
+res(1, "2")
+  .then((value) => console.log(value))
+  .catch((error) => console.log(error))
+  .finally(() => console.log("finished 2"));

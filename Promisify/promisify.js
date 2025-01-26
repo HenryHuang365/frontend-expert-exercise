@@ -31,7 +31,8 @@ res(1, 2)
   })
   .catch((error) => {
     console.log(error);
-  });
+  })
+  .finally(() => console.log("Finished 1"));
 
 res(1, "2")
   .then((data) => {
@@ -39,4 +40,5 @@ res(1, "2")
   })
   .catch((error) => {
     console.log(error);
-  });
+  })
+  .finally(() => console.log("finished 2"));
